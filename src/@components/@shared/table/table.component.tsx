@@ -1,4 +1,4 @@
-import { ITableColumn, ITableProps } from '@components/@shared/table/table.interface';
+import { ITableColumn, ITableProps } from '@types';
 import { currencyFormat } from '@utils/currency.util';
 
 const Table = ({ rows, columns, hasTotal, totalKey }: ITableProps): JSX.Element => {

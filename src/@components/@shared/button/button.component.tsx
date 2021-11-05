@@ -1,4 +1,4 @@
-import { IButtonProps } from '@components/@shared/button/button.interface';
+import { IButtonProps } from '@types';
 import { ReactComponent as DeleteIcon } from '@/assets/images/delete-icon.svg';
 
 const Button = ({ label, action, type = 'button', disabled, icon, color = 'blue' }: IButtonProps): JSX.Element => {

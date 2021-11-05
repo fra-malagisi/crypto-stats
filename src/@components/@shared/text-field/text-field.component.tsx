@@ -1,4 +1,4 @@
-import { ITextFieldProps } from '@components/@shared/text-field/text-field.interface';
+import { ITextFieldProps } from '@types';
 
 const TextField = ({ label, id, placeholder, handleChange, type = 'text', ...otherProps }: ITextFieldProps): JSX.Element => {
   const idLabel = `${id}-label`;

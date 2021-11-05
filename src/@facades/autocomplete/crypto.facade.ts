@@ -1,7 +1,7 @@
-import coinPaprikaApi from '@services/coin-paprika/coinPaprikaApi';
-import { IAutocompleteData } from '@components/@shared/autocomplete/autocomplete.interface';
-import { ICoin, ICryptoDetails } from '@models/coinPaprika.models';
-import { ICrypto } from '@models/crypto.models';
+import coinPaprikaApi from '@services/coin-paprika';
+import { IAutocompleteData } from '@types';
+import { ICoin, ICryptoDetails } from '@types';
+import { ICrypto } from '@types';
 
 export const cryptoAutocompleteList = async (): Promise<IAutocompleteData[]> => {
   const fullCryptoList = await coinPaprikaApi.coins();

@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import { ICoin, ICryptoDetails, IMarketGlobalResponse } from '../../@models/coinPaprika.models';
+import { ICoin, ICryptoDetails, IMarketGlobalResponse } from '../../@types/coinPaprika.models';
 
 async function coins(): Promise<ICoin[]> {
   return await axios

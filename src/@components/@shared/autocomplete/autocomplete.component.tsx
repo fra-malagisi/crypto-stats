@@ -1,6 +1,6 @@
 import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from 'react';
-import { IAutocompleteData, IAutocompleteProps } from '@components/@shared/autocomplete/autocomplete.interface';
-import { keys } from '@utils/kyes';
+import { IAutocompleteData, IAutocompleteProps } from '@types';
+import { keys } from '@utils';
 
 const Autocomplete = ({ id, label, placeholder, data, onChange, reset, returnText }: IAutocompleteProps): JSX.Element => {
   const [showList, setShowList] = useState<boolean>(false);

@@ -1,13 +1,13 @@
-import Header from '@components/@core/header/header.component';
-import AddCrypto from '@pages/home/add-crypto/add-crypto.component';
-import { ITableProps } from '@components/@shared/table/table.interface';
-import { deleteCrypto, getAllCoins } from '@services/fauna-db/crypto.service';
+import Header from '@components/@core/header';
+import AddCrypto from '@pages/home/add-crypto';
+import { ITableProps } from '@types';
+import faunaDbApi from '@services/fauna-db/crypto.service';
 import { useEffect, useState } from 'react';
-import { ICrypto } from '@models/crypto.models';
-import { cryptoDetails } from '@facades/autocomplete/crypto.facade';
-import { useExchangeRatio } from '@hooks/useExchangeRatio.hook';
+import { ICrypto } from '@types';
+import { cryptoDetails } from '@facades/autocomplete';
+import { useExchangeRatio } from '@hooks';
 import { currencyFormat } from '@utils/currency.util';
-import Table from '@components/@shared/table/table.component';
+import Table from '@components/@shared/table';
 import ArrayUtil from '@utils/array.util';
 import { ReactComponent as DeleteIcon } from '@/assets/images/delete-icon.svg';
 import Button from '@components/@shared/button/button.component';
@@ -49,7 +49,7 @@ function App() {
   }, [exchangeRatio]);
 
   const getCryptoData = async () => {
-    const allCrypto: ICrypto[] = await getAllCoins();
+    const allCrypto: ICrypto[] = await faunaDbApi.getAllCoins();
     const cryptosData: ICrypto[] = [];
     for (const [i, crypto] of allCrypto.entries()) {
       const cryptoData = await cryptoDetails(crypto);
@@ -74,7 +74,7 @@ function App() {
   };
 
   const handleDeleteCrypto = async (cryptoRef: string) => {
-    await deleteCrypto(cryptoRef);
+    await faunaDbApi.deleteCrypto(cryptoRef);
     setTableProps({
       columns: [...tableProps.columns],
       rows: tableProps.rows.filter((row) => {

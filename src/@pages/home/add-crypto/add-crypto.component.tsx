@@ -1,15 +1,15 @@
 import { ChangeEvent, useEffect, useState } from 'react';
 
-import { cryptoAutocompleteList } from '@facades/autocomplete/crypto.facade';
-import { saveCrypto } from '@services/fauna-db/crypto.service';
+import { cryptoAutocompleteList } from '@facades/autocomplete';
+import faunaDbApi from '@services/fauna-db';
 
-import Autocomplete from '@components/@shared/autocomplete/autocomplete.component';
-import TextField from '@components/@shared/text-field/text-field.component';
-import Button from '@components/@shared/button/button.component';
-import Loader from '@components/@shared/content-loader/content-loader.component';
+import Autocomplete from '@components/@shared/autocomplete';
+import TextField from '@components/@shared/text-field';
+import Button from '@components/@shared/button';
+import Loader from '@components/@shared/content-loader';
 
-import { IAutocompleteData } from '@components/@shared/autocomplete/autocomplete.interface';
-import { AddCryptoProps } from './add-crypto.interface';
+import { IAutocompleteData } from '@types';
+import { AddCryptoProps } from '@types';
 
 const AddCrypto = ({ onCryptoAdded }: AddCryptoProps) => {
   const [qty, setQty] = useState<string>('');
@@ -29,7 +29,7 @@ const AddCrypto = ({ onCryptoAdded }: AddCryptoProps) => {
   };
 
   const handleSubmit = async () => {
-    await saveCrypto({
+    await faunaDbApi.saveCrypto({
       id: cryptoId,
       qty: +qty,
       name: cryptoName,

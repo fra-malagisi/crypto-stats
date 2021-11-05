@@ -1,4 +1,4 @@
-import { getCurrencyExchangeRatios } from '../@services/currencies/currencies.service';
+import exchangeRatioApi from '../@services/currencies';
 import { useEffect, useState } from 'react';
 
 export const useExchangeRatio = (actualCurrency: string, currencyToConvert: string): number => {
@@ -8,7 +8,7 @@ export const useExchangeRatio = (actualCurrency: string, currencyToConvert: stri
     console.log('useEffectHook');
     const getExchangeRatios = async () => {
       if (!sessionStorage.getItem('exchangeRatios')) {
-        const exchangeRatios = await getCurrencyExchangeRatios(actualCurrency);
+        const exchangeRatios = await exchangeRatioApi.getCurrencyExchangeRatios(actualCurrency);
         sessionStorage.setItem('exchangeRatios', JSON.stringify(exchangeRatios));
       }
       setExchangeRatio(JSON.parse(sessionStorage.getItem('exchangeRatios') || '')[actualCurrency][currencyToConvert]);
