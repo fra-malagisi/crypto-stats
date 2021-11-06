@@ -7,7 +7,9 @@ const Table = ({ rows, columns, hasTotal, totalKey }: ITableProps): JSX.Element 
       <thead>
         <tr>
           {columns.map((column: ITableColumn, i: number) => (
-            <TableHeaderCell {...column} key={`${i}`} />
+            <th className="border-l border-b p-4" key={column.key}>
+              {column.label}
+            </th>
           ))}
         </tr>
       </thead>
@@ -42,9 +44,3 @@ const Table = ({ rows, columns, hasTotal, totalKey }: ITableProps): JSX.Element 
 };
 
 export default Table;
-
-const TableHeaderCell = (column: ITableColumn): JSX.Element => (
-  <th className="border-l border-b p-4" key={column.key}>
-    {column.label}
-  </th>
-);

@@ -1,6 +1,6 @@
 import { ITextFieldProps } from '@types';
 
-const TextField = ({ label, id, placeholder, handleChange, type = 'text', ...otherProps }: ITextFieldProps): JSX.Element => {
+const TextField = ({ label, id, placeholder, onChange, type = 'text', ...otherProps }: ITextFieldProps): JSX.Element => {
   const idLabel = `${id}-label`;
 
   return (
@@ -14,7 +14,7 @@ const TextField = ({ label, id, placeholder, handleChange, type = 'text', ...oth
         id={id}
         aria-labelledby={idLabel}
         placeholder={placeholder}
-        onChange={handleChange}
+        onChange={onChange}
         {...otherProps}
       ></input>
     </>

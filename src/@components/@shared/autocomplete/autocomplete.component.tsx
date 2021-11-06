@@ -29,10 +29,8 @@ const Autocomplete = ({ id, label, placeholder, data, onChange, reset, returnTex
   }, [showList]);
 
   useEffect(() => {
-    if (reset) {
-      setTextFieldValue('');
-      onChange('');
-    }
+    setTextFieldValue('');
+    onChange('');
   }, [reset]);
 
   const saveValue = (index?: number) => {

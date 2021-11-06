@@ -5,6 +5,7 @@ export interface IAutocompleteProps {
   data: IAutocompleteData[];
   reset?: boolean;
   returnText?: boolean;
+  value?: string;
   onChange: (value: any) => void;
 }
 
