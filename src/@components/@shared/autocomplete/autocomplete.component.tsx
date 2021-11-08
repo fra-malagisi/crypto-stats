@@ -84,6 +84,7 @@ const Autocomplete = ({ id, label, placeholder, data, onChange, reset, returnTex
         setCurrentElement(currentElement - 1);
       }
     } else if (event.keyCode === keys.ENTER) {
+      event.preventDefault();
       saveValue();
     } else if (event.keyCode === keys.ESC) {
       event.preventDefault();
