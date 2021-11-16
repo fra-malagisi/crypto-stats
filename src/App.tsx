@@ -1,16 +1,16 @@
-import Header from '@components/@core/header';
-import AddCrypto from '@pages/home/add-crypto';
-import { ITableProps } from '@types';
-import faunaDbApi from '@services/fauna-db/crypto.service';
+import Header from 'components/core/header';
+import AddCrypto from 'pages/home/add-crypto';
+import { ITableProps } from 'types';
+import faunaDbApi from 'services/fauna-db/crypto.service';
 import { useEffect, useState } from 'react';
-import { ICrypto } from '@types';
-import { cryptoDetails } from '@facades/autocomplete';
-import { useExchangeRatio } from '@hooks';
-import { currencyFormat } from '@utils/currency.util';
-import Table from '@components/@shared/table';
-import ArrayUtil from '@utils/array.util';
-import { ReactComponent as DeleteIcon } from '@/assets/images/delete-icon.svg';
-import Button from '@components/@shared/button/button.component';
+import { ICrypto } from 'types';
+import { cryptoDetails } from 'facades/autocomplete';
+import { useExchangeRatio } from 'hooks';
+import Table from 'components/shared/table';
+import ArrayUtil from 'utils/array.util';
+import { DeleteIcon } from 'icons';
+import Button from 'components/shared/button/button.component';
+import { populateCryptoValues } from 'utils';
 
 function App() {
   const exchangeRatio = useExchangeRatio('usd', 'eur');
@@ -52,11 +52,8 @@ function App() {
     const allCrypto: ICrypto[] = await faunaDbApi.getAllCoins();
     const cryptosData: ICrypto[] = [];
     for (const [i, crypto] of allCrypto.entries()) {
-      const cryptoData = await cryptoDetails(crypto);
-      cryptoData.value = +((cryptoData.value || 0) * exchangeRatio).toFixed(3);
-      cryptoData.myValue = +((cryptoData.value || 0) * cryptoData.qty).toFixed(3);
-      cryptoData.myValueFormatted = currencyFormat(cryptoData.myValue || 0, '€');
-      cryptoData.valueFormatted = currencyFormat(cryptoData.value || 0, '€');
+      let cryptoData = await cryptoDetails(crypto);
+      cryptoData = populateCryptoValues(cryptoData, exchangeRatio);
       cryptosData.push(cryptoData);
       if (ArrayUtil.isLastElement(allCrypto.length, i)) {
         cryptosData.sort((a, b) => (b.myValue || 0) - (a.myValue || 0));
