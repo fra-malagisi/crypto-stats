@@ -1,12 +1,21 @@
-import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from 'react';
-import { IAutocompleteData, IAutocompleteProps } from 'types';
-import { keys } from 'utils';
+import { useEffect, useRef } from 'react';
+import { IAutocompleteProps } from 'types';
+import useAutocomplete from './use-autocomplete';
 
 const Autocomplete = ({ id, label, placeholder, data, onChange, reset, returnText }: IAutocompleteProps): JSX.Element => {
-  const [showList, setShowList] = useState<boolean>(false);
-  const [textFieldValue, setTextFieldValue] = useState<string>('');
-  const [itemsFiltered, setItemsFiltered] = useState<IAutocompleteData[]>([]);
-  const [currentElement, setCurrentElement] = useState<number>(0);
+  const {
+    registerInputRef,
+    showList,
+    itemsFiltered,
+    registerOptionsRef,
+    currentElement,
+    textFieldValue,
+    onChangeTextFiledValue,
+    onInputChange,
+    onKeyDown,
+    onBlur,
+    onClickItem,
+  } = useAutocomplete(data, onChange, id, returnText);
 
   const idLabel = `${id}-label`;
   const idListBox = `${id}-listbox`;
@@ -15,94 +24,17 @@ const Autocomplete = ({ id, label, placeholder, data, onChange, reset, returnTex
   const optionsRef = useRef<Array<HTMLLIElement | null>>([]);
 
   useEffect(() => {
-    const hasElements = itemsFiltered.length > 0;
-    setShowList(hasElements);
-    inputRef?.current?.setAttribute('aria-expanded', hasElements ? 'true' : 'false');
-  }, [itemsFiltered]);
+    registerInputRef(inputRef);
+  }, [inputRef]);
 
   useEffect(() => {
-    if (showList) {
-      unselect();
-      setCurrentElement(0);
-      optionsRef.current[0]?.setAttribute('aria-selected', 'true');
-    }
-  }, [showList]);
+    registerOptionsRef(optionsRef);
+  }, [optionsRef]);
 
   useEffect(() => {
-    setTextFieldValue('');
+    onChangeTextFiledValue('');
     onChange('');
   }, [reset]);
-
-  const saveValue = (index?: number) => {
-    const text = optionsRef.current[index || currentElement]?.textContent || '';
-    setTextFieldValue(text);
-    setShowList(false);
-    inputRef?.current?.setAttribute('aria-activedescendant', '');
-    const returnValue = optionsRef.current[index || currentElement]?.dataset['value'] || '';
-    onChange(!returnText ? returnValue : `${returnValue} : ${text}`);
-  };
-
-  const unselect = () => {
-    optionsRef.current.forEach((option) => {
-      if (option?.getAttribute('aria-selected')) {
-        option?.removeAttribute('aria-selected');
-      }
-    });
-  };
-
-  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    onChange('');
-    setTextFieldValue(event.target.value);
-    setItemsFiltered([
-      ...data.filter((item: { id: string; label: string }) => {
-        return event.target.value && item.label.toLowerCase().indexOf(event.target.value.toLowerCase()) === 0;
-      }),
-    ]);
-    setShowList(false);
-  };
-
-  const handleKeyDownInput = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.keyCode === keys.DOWN) {
-      event.preventDefault();
-      if (optionsRef.current[currentElement + 1]) {
-        unselect();
-        optionsRef.current[currentElement + 1]?.setAttribute('aria-selected', 'true');
-        if (currentElement + 1 > 4) {
-          optionsRef.current[currentElement + 1]?.scrollIntoView(false);
-        }
-        inputRef?.current?.setAttribute('aria-activedescendant', `${id}-${optionsRef.current[currentElement + 1]?.textContent}`);
-        setCurrentElement(currentElement + 1);
-      }
-    } else if (event.keyCode === keys.UP) {
-      event.preventDefault();
-      if (optionsRef.current[currentElement - 1]) {
-        unselect();
-        optionsRef.current[currentElement - 1]?.setAttribute('aria-selected', 'true');
-        optionsRef.current[currentElement - 1]?.scrollIntoView(false);
-        inputRef?.current?.setAttribute('aria-activedescendant', `${id}-${optionsRef.current[currentElement - 1]?.textContent}`);
-
-        setCurrentElement(currentElement - 1);
-      }
-    } else if (event.keyCode === keys.ENTER) {
-      event.preventDefault();
-      saveValue();
-    } else if (event.keyCode === keys.ESC) {
-      event.preventDefault();
-      setShowList(false);
-      inputRef?.current?.setAttribute('aria-activedescendant', '');
-      setTextFieldValue('');
-      onChange('');
-      setCurrentElement(0);
-    }
-  };
-
-  const handleClickItem = (index: number) => {
-    saveValue(index);
-  };
-
-  const handleBlur = () => {
-    setShowList(false);
-  };
 
   return (
     <>
@@ -118,9 +50,9 @@ const Autocomplete = ({ id, label, placeholder, data, onChange, reset, returnTex
         aria-controls={idListBox}
         aria-autocomplete="list"
         placeholder={placeholder}
-        onChange={handleInputChange}
-        onBlur={handleBlur}
-        onKeyDown={(event) => handleKeyDownInput(event)}
+        onChange={(event) => onInputChange(event.target.value)}
+        onBlur={onBlur}
+        onKeyDown={onKeyDown}
         autoComplete="off"
         value={textFieldValue}
       ></input>
@@ -140,7 +72,7 @@ const Autocomplete = ({ id, label, placeholder, data, onChange, reset, returnTex
               role="option"
               ref={(el) => (optionsRef.current[i] = el)}
               onMouseDown={(event) => {
-                handleClickItem(i);
+                onClickItem(i);
                 event.preventDefault();
               }}
               className={`text-base p-4 ${
