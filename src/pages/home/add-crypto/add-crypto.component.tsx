@@ -56,7 +56,7 @@ const AddCrypto = ({ onCryptoAdded }: AddCryptoProps) => {
             />
           </div>
           <div className="flex flex-col pt-6">
-            <Button label="+" type="submit" />
+            <Button label="+" type="submit" disabled={!watchCrypto || !watchQty} />
           </div>
         </form>
       ) : (

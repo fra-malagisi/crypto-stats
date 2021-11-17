@@ -7,4 +7,5 @@ export interface IButtonProps {
   disabled?: boolean;
   icon?: any;
   color?: string;
+  classes?: string;
 }

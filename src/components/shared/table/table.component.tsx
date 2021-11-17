@@ -17,8 +17,11 @@ const Table = ({ rows, columns, hasTotal, totalKey }: ITableProps): JSX.Element 
         {rows.map((row) => (
           <tr key={row.id}>
             {columns.map((column) => (
-              <td className="p-4 border-l border-b" key={row.id + column.key}>
-                {Array.isArray(row[column.key]) ? row[column.key][0] : row[column.key]}
+              <td
+                className={`p-4 border-l border-b ${Array.isArray(row[column.key]) ? 'fex justify-around' : ''}`}
+                key={row.id + column.key}
+              >
+                {Array.isArray(row[column.key]) ? [...row[column.key]] : row[column.key]}
               </td>
             ))}
           </tr>

@@ -8,6 +8,7 @@ export interface ITableProps {
 export interface ITableColumn {
   label: string;
   key: string;
+  editable?: boolean;
   hasCount?: boolean;
   isAction?: boolean;
 }

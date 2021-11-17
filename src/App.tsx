@@ -8,7 +8,7 @@ import { cryptoDetails } from 'facades/autocomplete';
 import { useExchangeRatio } from 'hooks';
 import Table from 'components/shared/table';
 import ArrayUtil from 'utils/array.util';
-import { DeleteIcon } from 'icons';
+import { DeleteIcon, EditIcon } from 'icons';
 import Button from 'components/shared/button/button.component';
 import { populateCryptoValues } from 'utils';
 
@@ -28,6 +28,7 @@ function App() {
       {
         label: 'Qty',
         key: 'qty',
+        editable: true,
       },
       {
         label: 'Wallet Value',
@@ -61,7 +62,16 @@ function App() {
           columns: [...tableProps.columns],
           rows: cryptosData.map((cryptoData) => ({
             ...cryptoData,
-            actions: [<Button key="delete" icon={<DeleteIcon />} color="red" action={() => handleDeleteCrypto(cryptoData.ref || '')} />],
+            actions: [
+              <Button
+                key="delete"
+                icon={<DeleteIcon />}
+                color="red"
+                action={() => handleDeleteCrypto(cryptoData.ref || '')}
+                classes="mr-4"
+              />,
+              <Button key="edit" icon={<EditIcon />} action={() => handleEdit()} />,
+            ],
           })),
           hasTotal: tableProps.hasTotal,
           totalKey: tableProps.totalKey,
@@ -81,6 +91,10 @@ function App() {
       hasTotal: tableProps.hasTotal,
       totalKey: tableProps.totalKey,
     });
+  };
+
+  const handleEdit = () => {
+    console.log('edit');
   };
 
   const onCryptoAdded = () => {
