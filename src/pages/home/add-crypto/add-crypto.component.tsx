@@ -40,7 +40,7 @@ const AddCrypto = ({ onCryptoAdded }: AddCryptoProps) => {
               name="crypto"
               control={control}
               defaultValue="''"
-              render={({ field: { onChange, value, ref } }) => (
+              render={({ field: { onChange } }) => (
                 <Autocomplete label="Crypto" id="crypto" data={autocompleteData} returnText reset={resetAutocomplete} onChange={onChange} />
               )}
             />
@@ -50,8 +50,8 @@ const AddCrypto = ({ onCryptoAdded }: AddCryptoProps) => {
               name="qty"
               control={control}
               defaultValue="''"
-              render={({ field: { onChange, value } }) => (
-                <TextField label="Qty" id="quantity" type="number" onChange={onChange} value={watchQty}></TextField>
+              render={({ field: { onChange } }) => (
+                <TextField name="qty" label="Qty" id="quantity" type="number" onChange={onChange} value={watchQty}></TextField>
               )}
             />
           </div>

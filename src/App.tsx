@@ -11,9 +11,13 @@ import ArrayUtil from 'utils/array.util';
 import { DeleteIcon, EditIcon } from 'icons';
 import Button from 'components/shared/button/button.component';
 import { populateCryptoValues } from 'utils';
+import Modal from './components/shared/modal';
+import UpdateCrypto from './pages/update-crypto';
 
 function App() {
   const exchangeRatio = useExchangeRatio('usd', 'eur');
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [cryptoToEdit, setCryptoToEdit] = useState<ICrypto | null>(null);
   const [tableProps, setTableProps] = useState<ITableProps>({
     rows: [],
     columns: [
@@ -70,7 +74,7 @@ function App() {
                 action={() => handleDeleteCrypto(cryptoData.ref || '')}
                 classes="mr-4"
               />,
-              <Button key="edit" icon={<EditIcon />} action={() => handleEdit()} />,
+              <Button key="edit" icon={<EditIcon />} action={() => openModal(cryptoData)} />,
             ],
           })),
           hasTotal: tableProps.hasTotal,
@@ -78,6 +82,11 @@ function App() {
         });
       }
     }
+  };
+
+  const openModal = (crypto: ICrypto) => {
+    setCryptoToEdit(crypto);
+    setShowModal(true);
   };
 
   const handleDeleteCrypto = async (cryptoRef: string) => {
@@ -93,10 +102,6 @@ function App() {
     });
   };
 
-  const handleEdit = () => {
-    console.log('edit');
-  };
-
   const onCryptoAdded = () => {
     getCryptoData();
   };
@@ -109,6 +114,12 @@ function App() {
         <br />
         {tableProps.rows?.length > 0 && <Table {...tableProps} />}
       </main>
+      <Modal
+        title="Update crypto"
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        content={cryptoToEdit ? <UpdateCrypto crypto={cryptoToEdit} /> : <></>}
+      />
     </>
   );
 }

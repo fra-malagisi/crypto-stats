@@ -7,4 +7,6 @@ export interface ITextFieldProps {
   type?: HTMLInputTypeAttribute;
   value?: string;
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
+  disabled?: boolean;
+  name: string;
 }
