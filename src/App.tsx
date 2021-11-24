@@ -118,7 +118,19 @@ function App() {
         title="Update crypto"
         show={showModal}
         onClose={() => setShowModal(false)}
-        content={cryptoToEdit ? <UpdateCrypto crypto={cryptoToEdit} /> : <></>}
+        content={
+          cryptoToEdit ? (
+            <UpdateCrypto
+              crypto={cryptoToEdit}
+              action={() => {
+                setShowModal(false);
+                getCryptoData();
+              }}
+            />
+          ) : (
+            <></>
+          )
+        }
       />
     </>
   );

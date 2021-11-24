@@ -20,6 +20,15 @@ const saveCrypto = async (crypto: ICrypto) =>
     })
   );
 
+const updateCrypto = async (crypto: ICrypto) =>
+  await client.query(
+    q.Update(q.Ref(q.Collection('crypto'), crypto.ref), {
+      data: {
+        ...crypto,
+      },
+    })
+  );
+
 const getCryptoById = async (id: string) => await client.query(q.Get(q.Ref(q.Collection('crypto'), id)));
 
 const deleteCrypto = async (cryptoRef: string) => await client.query(q.Delete(q.Ref(q.Collection(CRYPTO_COLLECTION), cryptoRef)));
@@ -29,6 +38,7 @@ const faunaDbApi = {
   saveCrypto,
   getCryptoById,
   deleteCrypto,
+  updateCrypto,
 };
 
 export default faunaDbApi;

@@ -3,20 +3,27 @@ import TextField from 'components/shared/text-field';
 import { UpdateCryptoProps } from 'types';
 import Button from 'components/shared/button';
 import RefreshIcon from 'icons/refresh.icon';
+import faunaDbApi from 'services/fauna-db';
 
 interface Values {
   name: string;
   qty: number;
 }
 
-const UpdateCrypto = ({ crypto }: UpdateCryptoProps): JSX.Element => {
+const UpdateCrypto = ({ crypto, action }: UpdateCryptoProps): JSX.Element => {
   const formik = useFormik({
     initialValues: {
       name: crypto.name,
       qty: crypto.qty,
     },
-    onSubmit: (values: Values) => console.log(values),
+    onSubmit: async (values: Values) => {
+      await faunaDbApi.updateCrypto({ id: crypto.id, qty: values.qty, name: crypto.name, ref: crypto.ref });
+      if (action) {
+        action();
+      }
+    },
   });
+
   return (
     <form className="flex" onSubmit={formik.handleSubmit}>
       <div className="mr-4 max-w-xs w-60">
@@ -26,7 +33,7 @@ const UpdateCrypto = ({ crypto }: UpdateCryptoProps): JSX.Element => {
         <TextField name="qty" id="qty" label="Qty:" type="number" onChange={formik.handleChange} value={formik.values.qty.toString()} />
       </div>
       <div className="flex flex-col pt-6">
-        <Button icon={<RefreshIcon />} type="submit" disabled={!formik.values.qty} />
+        <Button icon={<RefreshIcon isBig />} type="submit" disabled={!formik.values.qty} />
       </div>
     </form>
   );

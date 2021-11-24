@@ -3,4 +3,5 @@ export type ModalProps = {
   show: boolean;
   content: JSX.Element;
   onClose: () => void;
+  footerContent?: JSX.Element;
 };
