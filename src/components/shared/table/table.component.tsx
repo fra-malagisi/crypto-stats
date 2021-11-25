@@ -3,7 +3,7 @@ import { currencyFormat } from 'utils/currency.util';
 
 const Table = ({ rows, columns, hasTotal, totalKey }: ITableProps): JSX.Element => {
   return (
-    <table className="table-auto border-collapse border border-gray-300 shadow-md">
+    <table className="table-auto border-collapse border border-gray-300 shadow-md mr-6">
       <thead>
         <tr>
           {columns.map((column: ITableColumn) => (

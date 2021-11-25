@@ -8,3 +8,4 @@ export * from './add-crypto.interface';
 export * from './modal.types';
 export * from './update-crypto.types';
 export * from './icons.types';
+export * from './chart.types';

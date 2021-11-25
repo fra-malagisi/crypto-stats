@@ -10,14 +10,17 @@ import Table from 'components/shared/table';
 import ArrayUtil from 'utils/array.util';
 import { DeleteIcon, EditIcon } from 'icons';
 import Button from 'components/shared/button/button.component';
-import { populateCryptoValues } from 'utils';
+import { getRandomColor, populateCryptoValues } from 'utils';
 import Modal from './components/shared/modal';
 import UpdateCrypto from './pages/update-crypto';
+import PieChart from 'charts';
 
 function App() {
   const exchangeRatio = useExchangeRatio('usd', 'eur');
   const [showModal, setShowModal] = useState<boolean>(false);
   const [cryptoToEdit, setCryptoToEdit] = useState<ICrypto | null>(null);
+  const [labels, setLabels] = useState<string[]>([]);
+  const [data, setData] = useState<number[]>([]);
   const [tableProps, setTableProps] = useState<ITableProps>({
     rows: [],
     columns: [
@@ -61,6 +64,8 @@ function App() {
       cryptoData = populateCryptoValues(cryptoData, exchangeRatio);
       cryptosData.push(cryptoData);
       if (ArrayUtil.isLastElement(allCrypto.length, i)) {
+        setLabels(cryptosData.map((crypto) => crypto.name));
+        setData(cryptosData.map((crypto) => crypto.myValue || 0));
         cryptosData.sort((a, b) => (b.myValue || 0) - (a.myValue || 0));
         setTableProps({
           columns: [...tableProps.columns],
@@ -109,10 +114,12 @@ function App() {
   return (
     <>
       <Header />
-      <main className="px-4 pb-8 md:px-0">
+      <main className="px-4 pb-8 md:px-0 flex flex-col">
         <AddCrypto onCryptoAdded={onCryptoAdded} />
-        <br />
-        {tableProps.rows?.length > 0 && <Table {...tableProps} />}
+        <div className="flex flex-row">
+          {tableProps.rows?.length > 0 && <Table {...tableProps} />}
+          <PieChart labels={labels} colors={labels.map((_) => getRandomColor())} data={data} />
+        </div>
       </main>
       <Modal
         title="Update crypto"

@@ -31,7 +31,7 @@ const AddCrypto = ({ onCryptoAdded }: AddCryptoProps) => {
   }, [watchCrypto]);
 
   return (
-    <section>
+    <section className="mb-6">
       <h2 className="font-sans text-2xl mb-8">Add your crypto</h2>
       {autocompleteData.length > 0 ? (
         <form className="flex" onSubmit={handleSubmit(onSubmit)}>
