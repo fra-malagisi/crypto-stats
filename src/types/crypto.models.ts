@@ -7,4 +7,5 @@ export interface ICrypto {
   myValue?: number;
   myValueFormatted?: string;
   valueFormatted?: string;
+  color?: string;
 }

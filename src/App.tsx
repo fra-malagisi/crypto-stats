@@ -20,6 +20,7 @@ function App() {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [cryptoToEdit, setCryptoToEdit] = useState<ICrypto | null>(null);
   const [labels, setLabels] = useState<string[]>([]);
+  const [colors, setColors] = useState<string[]>([]);
   const [data, setData] = useState<number[]>([]);
   const [tableProps, setTableProps] = useState<ITableProps>({
     rows: [],
@@ -65,6 +66,7 @@ function App() {
       cryptosData.push(cryptoData);
       if (ArrayUtil.isLastElement(allCrypto.length, i)) {
         setLabels(cryptosData.map((crypto) => crypto.name));
+        setColors(cryptosData.map((crypto) => crypto.color || ''));
         setData(cryptosData.map((crypto) => crypto.myValue || 0));
         cryptosData.sort((a, b) => (b.myValue || 0) - (a.myValue || 0));
         setTableProps({
@@ -118,7 +120,7 @@ function App() {
         <AddCrypto onCryptoAdded={onCryptoAdded} />
         <div className="flex flex-row">
           {tableProps.rows?.length > 0 && <Table {...tableProps} />}
-          <PieChart labels={labels} colors={labels.map((_) => getRandomColor())} data={data} />
+          <PieChart labels={labels} colors={colors} data={data} />
         </div>
       </main>
       <Modal

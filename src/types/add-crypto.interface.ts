@@ -5,4 +5,5 @@ export interface AddCryptoProps {
 export interface IAddCryptoForm {
   crypto: string;
   qty: string;
+  color: string;
 }

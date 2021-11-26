@@ -14,21 +14,25 @@ import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 const AddCrypto = ({ onCryptoAdded }: AddCryptoProps) => {
   const { autocompleteData, onCryptoChange, onHandleSubmit, resetAutocomplete } = useAddCrypto();
 
-  const { control, handleSubmit, watch, reset } = useForm<IAddCryptoForm>({ defaultValues: { crypto: '', qty: '' } });
+  const { control, handleSubmit, watch, reset } = useForm<IAddCryptoForm>({ defaultValues: { crypto: '', qty: '', color: '' } });
 
   const onSubmit: SubmitHandler<IAddCryptoForm> = (data) => {
-    onHandleSubmit(data.qty, onCryptoAdded);
+    onHandleSubmit(data.qty, data.color, onCryptoAdded);
     reset();
   };
 
   const watchCrypto = watch('crypto');
   const watchQty = watch('qty');
+  const watchColor = watch('color');
 
   useEffect(() => {
     if (watchCrypto) {
       onCryptoChange(watchCrypto);
     }
   }, [watchCrypto]);
+  useEffect(() => {
+    console.log(watchColor);
+  }, [watchColor]);
 
   return (
     <section className="mb-6">
@@ -52,6 +56,16 @@ const AddCrypto = ({ onCryptoAdded }: AddCryptoProps) => {
               defaultValue="''"
               render={({ field: { onChange } }) => (
                 <TextField name="qty" label="Qty" id="quantity" type="number" onChange={onChange} value={watchQty}></TextField>
+              )}
+            />
+          </div>
+          <div className="mr-4 w-32">
+            <Controller
+              name="color"
+              control={control}
+              defaultValue="''"
+              render={({ field: { onChange } }) => (
+                <TextField name="color" label="Color" id="color" type="color" onChange={onChange} value={watchColor}></TextField>
               )}
             />
           </div>

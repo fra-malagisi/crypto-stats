@@ -5,7 +5,7 @@ import { IAutocompleteData } from 'types';
 
 type UseAddCryptoResult = {
   onCryptoChange: (crypto: string) => void;
-  onHandleSubmit: (qty: string, submitCallback: (() => void) | undefined) => void;
+  onHandleSubmit: (qty: string, color: string, submitCallback: (() => void) | undefined) => void;
   autocompleteData: IAutocompleteData[];
   resetAutocomplete: boolean;
 };
@@ -25,10 +25,11 @@ const useAddCrypto = (): UseAddCryptoResult => {
     setCryptoName(name && name.trim());
   };
 
-  const onHandleSubmit = async (qty: string, submitCallback: (() => void) | undefined) => {
+  const onHandleSubmit = async (qty: string, color: string, submitCallback: (() => void) | undefined) => {
     await faunaDbApi.saveCrypto({
       id: cryptoId,
       qty: +qty,
+      color: color,
       name: cryptoName,
     });
     if (submitCallback) {

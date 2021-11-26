@@ -13,7 +13,7 @@ const PieChart = ({ labels, colors, data }: ChartProps): JSX.Element => {
         label: '# of Votes',
         data: data,
         backgroundColor: colors,
-        borderWidth: 1,
+        borderWidth: 0,
       },
     ],
   };
