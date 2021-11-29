@@ -6,7 +6,7 @@
   },
   "extends": ["eslint:recommended", "plugin:react/recommended", "plugin:@typescript-eslint/recommended", "plugin:prettier/recommended"],
   "parser": "@typescript-eslint/parser",
-  "ignorePatterns": ["**/*.config.js"],
+  "ignorePatterns": ["**/*.config.js", "plopfile.js", "**/*.tsx.hbs"],
   "parserOptions": {
     "ecmaFeatures": {
       "jsx": true

@@ -10,7 +10,7 @@ import Table from 'components/shared/table';
 import ArrayUtil from 'utils/array.util';
 import { DeleteIcon, EditIcon } from 'icons';
 import Button from 'components/shared/button/button.component';
-import { getRandomColor, populateCryptoValues } from 'utils';
+import { populateCryptoValues } from 'utils';
 import Modal from './components/shared/modal';
 import UpdateCrypto from './pages/update-crypto';
 import PieChart from 'charts';

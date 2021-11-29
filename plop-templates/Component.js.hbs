@@ -1,0 +1,17 @@
+import React from 'react';
+{{#if propsType}}
+import { {{pascalCase propsType}} } from 'types';
+{{/if}}
+{{#getTypesFromProps props}}
+import { {{pascalCase this}} } from 'types';
+{{/getTypesFromProps}}
+
+const {{pascalCase name}} = ({{#if propsType}}{{#if props}}{ {{#each props}}{{this.name}}: {{pascalCase this.type}}{{#if @last}}{{else}}, {{/if}}{{/each}} }:{{else}}props: {{/if}} {{pascalCase propsType}}{{/if}}): JSX.Element => {
+  return (
+    <>
+      <h2>{{pascalCase name}}</h2>
+    </>
+  );
+};
+
+export default {{pascalCase name}};
