@@ -32,6 +32,12 @@ module.exports = function (plop) {
         type: 'input',
         name: 'propsType',
         message: 'What is the props type?',
+        validate: function (value) {
+          if (/.+/.test(value)) {
+            return true;
+          }
+          return 'prop type is required';
+        },
       },
       {
         when: function (response) {

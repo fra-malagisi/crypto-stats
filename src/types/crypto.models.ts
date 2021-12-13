@@ -8,4 +8,5 @@ export interface ICrypto {
   myValueFormatted?: string;
   valueFormatted?: string;
   color?: string;
+  percentage?: string;
 }

@@ -30,7 +30,7 @@ const Table = ({ rows, columns, hasTotal, totalKey }: ITableProps): JSX.Element 
       {hasTotal && (
         <tfoot>
           <tr>
-            <th id="total" colSpan={columns.length - 2}>
+            <th id="total" colSpan={columns.length - 3}>
               Total :
             </th>
             <td>

@@ -46,6 +46,10 @@ function App() {
         label: 'Actions',
         key: 'actions',
       },
+      {
+        label: '%',
+        key: 'percentage',
+      },
     ],
     hasTotal: true,
     totalKey: 'myValue',
@@ -65,6 +69,8 @@ function App() {
       cryptoData = populateCryptoValues(cryptoData, exchangeRatio);
       cryptosData.push(cryptoData);
       if (ArrayUtil.isLastElement(allCrypto.length, i)) {
+        const totalValue = cryptosData.reduce((acc, curr) => acc + (curr.myValue || 0), 0);
+        cryptosData.forEach((crypto) => (crypto.percentage = `${(((crypto.myValue || 0) / totalValue) * 100).toFixed(2)}`));
         setLabels(cryptosData.map((crypto) => crypto.name));
         setColors(cryptosData.map((crypto) => crypto.color || ''));
         setData(cryptosData.map((crypto) => crypto.myValue || 0));
@@ -107,6 +113,7 @@ function App() {
       hasTotal: tableProps.hasTotal,
       totalKey: tableProps.totalKey,
     });
+    getCryptoData();
   };
 
   const onCryptoAdded = () => {

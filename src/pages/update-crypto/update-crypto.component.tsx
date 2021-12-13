@@ -8,6 +8,7 @@ import faunaDbApi from 'services/fauna-db';
 interface Values {
   name: string;
   qty: number;
+  color: string | undefined;
 }
 
 const UpdateCrypto = ({ crypto, action }: UpdateCryptoProps): JSX.Element => {
@@ -15,9 +16,10 @@ const UpdateCrypto = ({ crypto, action }: UpdateCryptoProps): JSX.Element => {
     initialValues: {
       name: crypto.name,
       qty: crypto.qty,
+      color: crypto.color,
     },
     onSubmit: async (values: Values) => {
-      await faunaDbApi.updateCrypto({ id: crypto.id, qty: values.qty, name: crypto.name, ref: crypto.ref });
+      await faunaDbApi.updateCrypto({ id: crypto.id, qty: values.qty, name: crypto.name, color: values.color, ref: crypto.ref });
       if (action) {
         action();
       }
@@ -31,6 +33,16 @@ const UpdateCrypto = ({ crypto, action }: UpdateCryptoProps): JSX.Element => {
       </div>
       <div className="mr-4 w-32">
         <TextField name="qty" id="qty" label="Qty:" type="number" onChange={formik.handleChange} value={formik.values.qty.toString()} />
+      </div>
+      <div className="mr-4 w-32">
+        <TextField
+          name="color"
+          label="Color"
+          id="color"
+          type="color"
+          onChange={formik.handleChange}
+          value={formik.values.color?.toString()}
+        ></TextField>
       </div>
       <div className="flex flex-col pt-6">
         <Button icon={<RefreshIcon isBig />} type="submit" disabled={!formik.values.qty} />
