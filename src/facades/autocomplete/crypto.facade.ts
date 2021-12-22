@@ -12,7 +12,6 @@ export const cryptoAutocompleteList = async (): Promise<IAutocompleteData[]> => 
 };
 
 export const cryptoDetails = async (crypto: ICrypto): Promise<ICrypto> => {
-  console.log('facade', crypto);
   const cryptoDetail: ICryptoDetails = await coinPaprikaApi.getCryptoDetails(crypto.id);
   return { value: cryptoDetail.open, ...crypto };
 };

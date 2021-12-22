@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import faunaDbApi from 'services/fauna-db';
+import { faunaDbApiCrypto } from 'services/fauna-db';
 import { cryptoAutocompleteList } from 'facades/autocomplete';
 import { IAutocompleteData } from 'types';
 
@@ -26,7 +26,7 @@ const useAddCrypto = (): UseAddCryptoResult => {
   };
 
   const onHandleSubmit = async (qty: string, color: string, submitCallback: (() => void) | undefined) => {
-    await faunaDbApi.saveCrypto({
+    await faunaDbApiCrypto.saveCrypto({
       id: cryptoId,
       qty: +qty,
       color: color,

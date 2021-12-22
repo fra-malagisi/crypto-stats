@@ -3,7 +3,7 @@ import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { ChartProps } from 'types';
 
-const PieChart = ({ labels, colors, data }: ChartProps): JSX.Element => {
+export const PieChart = ({ labels, colors, data }: ChartProps): JSX.Element => {
   ChartJS.register(ArcElement, Tooltip, Legend);
 
   const config = {
@@ -23,5 +23,3 @@ const PieChart = ({ labels, colors, data }: ChartProps): JSX.Element => {
     </div>
   );
 };
-
-export default PieChart;

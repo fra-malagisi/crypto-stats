@@ -1,5 +1,5 @@
 export type ChartProps = {
   labels: string[];
-  colors: string[];
+  colors?: string[];
   data: number[];
 };

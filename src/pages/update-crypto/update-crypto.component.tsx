@@ -3,7 +3,7 @@ import TextField from 'components/shared/text-field';
 import { UpdateCryptoProps } from 'types';
 import Button from 'components/shared/button';
 import RefreshIcon from 'icons/refresh.icon';
-import faunaDbApi from 'services/fauna-db';
+import { faunaDbApiCrypto } from 'services/fauna-db';
 
 interface Values {
   name: string;
@@ -19,7 +19,7 @@ const UpdateCrypto = ({ crypto, action }: UpdateCryptoProps): JSX.Element => {
       color: crypto.color,
     },
     onSubmit: async (values: Values) => {
-      await faunaDbApi.updateCrypto({ id: crypto.id, qty: values.qty, name: crypto.name, color: values.color, ref: crypto.ref });
+      await faunaDbApiCrypto.updateCrypto({ id: crypto.id, qty: values.qty, name: crypto.name, color: values.color, ref: crypto.ref });
       if (action) {
         action();
       }

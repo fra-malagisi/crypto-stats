@@ -30,9 +30,6 @@ const AddCrypto = ({ onCryptoAdded }: AddCryptoProps) => {
       onCryptoChange(watchCrypto);
     }
   }, [watchCrypto]);
-  useEffect(() => {
-    console.log(watchColor);
-  }, [watchColor]);
 
   return (
     <section className="mb-6">

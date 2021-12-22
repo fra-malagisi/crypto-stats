@@ -33,12 +33,10 @@ const getCryptoById = async (id: string) => await client.query(q.Get(q.Ref(q.Col
 
 const deleteCrypto = async (cryptoRef: string) => await client.query(q.Delete(q.Ref(q.Collection(CRYPTO_COLLECTION), cryptoRef)));
 
-const faunaDbApi = {
+export const faunaDbApiCrypto = {
   getAllCoins,
   saveCrypto,
   getCryptoById,
   deleteCrypto,
   updateCrypto,
 };
-
-export default faunaDbApi;

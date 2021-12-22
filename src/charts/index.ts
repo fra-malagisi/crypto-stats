@@ -1,3 +1,2 @@
-import PieChart from './pie.chart';
-
-export default PieChart;
+export * from './pie.chart';
+export * from './bar.chart';

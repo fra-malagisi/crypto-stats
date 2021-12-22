@@ -9,3 +9,4 @@ export * from './modal.types';
 export * from './update-crypto.types';
 export * from './icons.types';
 export * from './chart.types';
+export * from './daily_amount.types';
