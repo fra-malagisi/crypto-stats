@@ -1,10 +1,11 @@
 import coinPaprikaApi from 'services/coin-paprika';
+import coinGeckoApi from 'services/coin-gecko';
 import { IAutocompleteData } from 'types';
 import { ICoin, ICryptoDetails } from 'types';
 import { ICrypto } from 'types';
 
 export const cryptoAutocompleteList = async (): Promise<IAutocompleteData[]> => {
-  const fullCryptoList = await coinPaprikaApi.coins();
+  const fullCryptoList = await coinGeckoApi.coins();
   return await fullCryptoList.map((crypto: ICoin) => ({
     id: crypto.id,
     label: crypto.name,
@@ -12,6 +13,6 @@ export const cryptoAutocompleteList = async (): Promise<IAutocompleteData[]> => 
 };
 
 export const cryptoDetails = async (crypto: ICrypto): Promise<ICrypto> => {
-  const cryptoDetail: ICryptoDetails = await coinPaprikaApi.getCryptoDetails(crypto.id);
-  return { value: cryptoDetail.open, ...crypto };
+  const cryptoPrice: number = await coinGeckoApi.getCryptoPrice(crypto.id);
+  return { value: cryptoPrice, ...crypto };
 };

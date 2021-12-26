@@ -29,8 +29,12 @@ const updateDailyAmount = async (dailyAmount: DailyAmount) =>
     })
   );
 
+const deleteDailyAmount = async (dailyAmountRef: string) =>
+  await client.query(q.Delete(q.Ref(q.Collection(DAILY_AMOUNT_COLLECTION), dailyAmountRef)));
+
 export const faunaDbApiDailyAmount = {
   getAllDailyAmounts,
   saveDailyAmounts,
   updateDailyAmount,
+  deleteDailyAmount,
 };

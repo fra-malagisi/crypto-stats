@@ -1,8 +1,10 @@
+import { last } from 'ramda';
+
 const isLastElement = (arrayLength: number, index: number): boolean => {
-  return index === arrayLength - 1;
+  return index === arrayLength;
 };
 
-const getLastElement = <T>(array: T[]): T => array[array.length - 1];
+const getLastElement = <T>(array: T[]): T | undefined => last(array);
 
 const ArrayUtil = {
   isLastElement,

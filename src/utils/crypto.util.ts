@@ -1,11 +1,11 @@
 import { ICrypto } from '../types';
-import { multiply } from './math.util';
+import { multiplication } from './math.util';
 import { currencyFormat } from './currency.util';
 
-export const populateCryptoValues = (crypto: ICrypto, exchangeRatio: number): ICrypto => {
-  crypto.value = parseFloat(multiply(crypto.value || 0, exchangeRatio).toFixed(3));
-  crypto.myValue = parseFloat(multiply(crypto.value || 0, crypto.qty).toFixed(3));
-  crypto.myValueFormatted = currencyFormat(crypto.myValue || 0, '€');
-  crypto.valueFormatted = currencyFormat(crypto.value || 0, '€');
-  return { ...crypto };
+export const populateCryptoValues = (crypto: ICrypto): ICrypto => {
+  const value = parseFloat((crypto.value || 0).toFixed(3));
+  const myValue = parseFloat(multiplication(value || 0, crypto.qty).toFixed(3));
+  const myValueFormatted = currencyFormat(myValue || 0, '€');
+  const valueFormatted = currencyFormat(value || 0, '€');
+  return { ...crypto, value, myValue, myValueFormatted, valueFormatted };
 };

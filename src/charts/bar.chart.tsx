@@ -20,6 +20,7 @@ export const BarChart = ({ data, labels }: ChartProps) => {
         type: 'bar',
         data: formatData(data),
         options: {
+          maintainAspectRatio: false,
           responsive: true,
           scales: { y: { beginAtZero: true } },
           plugins: { legend: { display: false }, title: { display: true, text: 'PNL' } },
@@ -40,7 +41,7 @@ export const BarChart = ({ data, labels }: ChartProps) => {
 
   return (
     <div className="w-1/2 border rounded shadow">
-      <canvas ref={canvasCallback} id="myChart" width="200" height="200"></canvas>
+      <canvas ref={canvasCallback} id="myChart" width="200" height="400"></canvas>
     </div>
   );
 };

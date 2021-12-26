@@ -29,7 +29,7 @@ const useAddCrypto = (): UseAddCryptoResult => {
     await faunaDbApiCrypto.saveCrypto({
       id: cryptoId,
       qty: +qty,
-      color: color,
+      color: color || '#000',
       name: cryptoName,
     });
     if (submitCallback) {

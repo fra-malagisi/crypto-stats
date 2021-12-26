@@ -6,7 +6,6 @@ import { faunaDbApiCrypto, faunaDbApiDailyAmount } from 'services/fauna-db';
 import { useEffect, useState } from 'react';
 import { ICrypto } from 'types';
 import { cryptoDetails } from 'facades/autocomplete';
-import { useExchangeRatio } from 'hooks';
 import Table from 'components/shared/table';
 import ArrayUtil from 'utils/array.util';
 import { DeleteIcon, EditIcon } from 'icons';
@@ -15,78 +14,54 @@ import { populateCryptoValues } from 'utils';
 import Modal from './components/shared/modal';
 import UpdateCrypto from './pages/update-crypto';
 import { BarChart, PieChart } from 'charts';
+import { subtraction } from 'utils';
+import { initialTableStructure } from './constants';
+import { equals, prop, map, propOr, append, drop, forEach, complement, all } from 'ramda';
+import coinGeckoApi from 'services/coin-gecko';
 
 function App() {
-  const exchangeRatio = useExchangeRatio('usd', 'eur');
   const [showModal, setShowModal] = useState<boolean>(false);
   const [dailyAmounts, setdailyAmounts] = useState<DailyAmount[]>([]);
   const [cryptoToEdit, setCryptoToEdit] = useState<ICrypto | null>(null);
   const [chartProps, setChartProps] = useState<ChartProps>({ labels: [], colors: [], data: [] });
-  const [totalValue, setTotalValue] = useState<number>(0);
-  const [tableProps, setTableProps] = useState<ITableProps>({
-    rows: [],
-    columns: [
-      {
-        label: 'Name',
-        key: 'name',
-      },
-      {
-        label: 'Value',
-        key: 'valueFormatted',
-      },
-      {
-        label: 'Qty',
-        key: 'qty',
-        editable: true,
-      },
-      {
-        label: 'Wallet Value',
-        key: 'myValueFormatted',
-      },
-      {
-        label: 'Actions',
-        key: 'actions',
-      },
-      {
-        label: '%',
-        key: 'percentage',
-      },
-    ],
-    hasTotal: true,
-    totalKey: 'myValue',
-  });
+  const [tableProps, setTableProps] = useState<ITableProps>(initialTableStructure);
 
   useEffect(() => {
-    const today = new Date().toLocaleDateString();
-    if (dailyAmounts.length > 0 && totalValue && !dailyAmounts.some((dailyAmount) => dailyAmount.date === today)) {
-      saveDailyAmout({ date: today, amount: totalValue, pnl: totalValue - (ArrayUtil.getLastElement<DailyAmount>(dailyAmounts).pnl || 0) });
-    }
-  }, [dailyAmounts, totalValue]);
-
-  useEffect(() => {
-    const getDailyAmounts = async () => {
-      const dailyAmounts = await faunaDbApiDailyAmount.getAllDailyAmounts();
-      setdailyAmounts(dailyAmounts.slice(1));
-    };
-    getDailyAmounts();
+    getCryptoData();
   }, []);
 
-  useEffect(() => {
-    if (exchangeRatio > 0) {
-      getCryptoData();
+  const checkDailyAmounts = async (allCrypto: ICrypto[]) => {
+    const yesterday = new Date(new Date().setDate(new Date().getDate() - 1)).toLocaleDateString();
+    if (dailyAmounts.length === 0) {
+      const dailyAmounts = await faunaDbApiDailyAmount.getAllDailyAmounts();
+      setdailyAmounts(drop(1, dailyAmounts));
+      if (all(complement(equals(yesterday)), map(prop('date'), dailyAmounts))) {
+        let yesterdayTotalAmount = 0;
+        for (const crypto of allCrypto) {
+          const price = await coinGeckoApi.getCryptoHistory(crypto.id, yesterday.split('/').join('-'));
+          yesterdayTotalAmount = yesterdayTotalAmount + price * crypto.qty;
+        }
+        const newDailyAmount: DailyAmount = {
+          date: yesterday,
+          amount: yesterdayTotalAmount,
+          pnl: subtraction(yesterdayTotalAmount, propOr(0, 'amount')(ArrayUtil.getLastElement<DailyAmount>(dailyAmounts))),
+        };
+        saveDailyAmount(newDailyAmount);
+        setdailyAmounts(append(newDailyAmount, dailyAmounts));
+      }
     }
-  }, [exchangeRatio]);
+  };
 
   const getCryptoData = async () => {
     const allCrypto: ICrypto[] = await faunaDbApiCrypto.getAllCoins();
-    const cryptosData: ICrypto[] = [];
-    for (const [i, crypto] of allCrypto.entries()) {
+    checkDailyAmounts(allCrypto);
+    let cryptosData: ICrypto[] = [];
+    forEach(async (crypto) => {
       let cryptoData = await cryptoDetails(crypto);
-      cryptoData = populateCryptoValues(cryptoData, exchangeRatio);
-      cryptosData.push(cryptoData);
-      if (ArrayUtil.isLastElement(allCrypto.length, i)) {
+      cryptoData = populateCryptoValues(cryptoData);
+      cryptosData = append(cryptoData, cryptosData);
+      if (ArrayUtil.isLastElement(allCrypto.length, cryptosData.length)) {
         const totalAmount = cryptosData.reduce((acc, curr) => acc + (curr.myValue || 0), 0);
-        setTotalValue(totalAmount);
         cryptosData.forEach((crypto) => (crypto.percentage = `${(((crypto.myValue || 0) / totalAmount) * 100).toFixed(2)}`));
         setChartProps({
           labels: cryptosData.map((crypto) => crypto.name),
@@ -113,10 +88,10 @@ function App() {
           totalKey: tableProps.totalKey,
         });
       }
-    }
+    }, allCrypto);
   };
 
-  const saveDailyAmout = async (dailyAmount: DailyAmount) => await faunaDbApiDailyAmount.saveDailyAmounts(dailyAmount);
+  const saveDailyAmount = async (dailyAmount: DailyAmount) => await faunaDbApiDailyAmount.saveDailyAmounts(dailyAmount);
 
   const openModal = (crypto: ICrypto) => {
     setCryptoToEdit(crypto);
