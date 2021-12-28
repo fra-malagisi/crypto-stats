@@ -14,16 +14,15 @@ import { populateCryptoValues } from 'utils';
 import Modal from './components/shared/modal';
 import UpdateCrypto from './pages/update-crypto';
 import { BarChart, PieChart } from 'charts';
-import { subtraction } from 'utils';
 import { initialTableStructure } from './constants';
-import { equals, prop, map, propOr, append, drop, forEach, complement, all } from 'ramda';
+import { equals, prop, map, propOr, append, drop, forEach, complement, all, add, multiply, subtract, assoc, reduce } from 'ramda';
 import coinGeckoApi from 'services/coin-gecko';
 
 function App() {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [dailyAmounts, setdailyAmounts] = useState<DailyAmount[]>([]);
   const [cryptoToEdit, setCryptoToEdit] = useState<ICrypto | null>(null);
-  const [chartProps, setChartProps] = useState<ChartProps>({ labels: [], colors: [], data: [] });
+  const [pieChartProps, setPieChartProps] = useState<ChartProps>({ labels: [], colors: [], data: [] });
   const [tableProps, setTableProps] = useState<ITableProps>(initialTableStructure);
 
   useEffect(() => {
@@ -32,25 +31,57 @@ function App() {
 
   const checkDailyAmounts = async (allCrypto: ICrypto[]) => {
     const yesterday = new Date(new Date().setDate(new Date().getDate() - 1)).toLocaleDateString();
-    if (dailyAmounts.length === 0) {
+    if (equals(dailyAmounts.length, 0)) {
       const dailyAmounts = await faunaDbApiDailyAmount.getAllDailyAmounts();
       setdailyAmounts(drop(1, dailyAmounts));
       if (all(complement(equals(yesterday)), map(prop('date'), dailyAmounts))) {
         let yesterdayTotalAmount = 0;
         for (const crypto of allCrypto) {
           const price = await coinGeckoApi.getCryptoHistory(crypto.id, yesterday.split('/').join('-'));
-          yesterdayTotalAmount = yesterdayTotalAmount + price * crypto.qty;
+          yesterdayTotalAmount = add(yesterdayTotalAmount)(multiply(price, crypto.qty));
         }
         const newDailyAmount: DailyAmount = {
           date: yesterday,
           amount: yesterdayTotalAmount,
-          pnl: subtraction(yesterdayTotalAmount, propOr(0, 'amount')(ArrayUtil.getLastElement<DailyAmount>(dailyAmounts))),
+          pnl: subtract(yesterdayTotalAmount, propOr(0, 'amount')(ArrayUtil.getLastElement<DailyAmount>(dailyAmounts))),
         };
         saveDailyAmount(newDailyAmount);
         setdailyAmounts(append(newDailyAmount, dailyAmounts));
       }
     }
   };
+
+  const updateTableRows = (cryptosData: ICrypto[]) =>
+    assoc(
+      'rows',
+      map(
+        (cryptoData: ICrypto) => ({
+          ...cryptoData,
+          actions: [
+            <Button
+              key="delete"
+              icon={<DeleteIcon />}
+              color="red"
+              action={() => handleDeleteCrypto(cryptoData.ref || '')}
+              classes="mr-4"
+            />,
+            <Button key="edit" icon={<EditIcon />} action={() => openModal(cryptoData)} />,
+          ],
+        }),
+        cryptosData
+      )
+    )(tableProps);
+
+  const getPieChartProps = (cryptosData: ICrypto[]) =>
+    reduce(
+      (acc, curr) => ({
+        labels: append(curr.name, acc.labels),
+        colors: append(curr.color || '', acc.colors),
+        data: append(curr.myValue || 0, acc.data),
+      }),
+      { labels: [] as string[], colors: [] as string[], data: [] as number[] },
+      cryptosData
+    );
 
   const getCryptoData = async () => {
     const allCrypto: ICrypto[] = await faunaDbApiCrypto.getAllCoins();
@@ -61,32 +92,14 @@ function App() {
       cryptoData = populateCryptoValues(cryptoData);
       cryptosData = append(cryptoData, cryptosData);
       if (ArrayUtil.isLastElement(allCrypto.length, cryptosData.length)) {
-        const totalAmount = cryptosData.reduce((acc, curr) => acc + (curr.myValue || 0), 0);
-        cryptosData.forEach((crypto) => (crypto.percentage = `${(((crypto.myValue || 0) / totalAmount) * 100).toFixed(2)}`));
-        setChartProps({
-          labels: cryptosData.map((crypto) => crypto.name),
-          colors: cryptosData.map((crypto) => crypto.color || ''),
-          data: cryptosData.map((crypto) => crypto.myValue || 0),
-        });
+        const totalAmount = reduce((acc, curr) => acc + (curr.myValue || 0), 0, cryptosData);
+        cryptosData = map(
+          (cryptoData) => assoc('percentage', `${(((cryptoData.myValue || 0) / totalAmount) * 100).toFixed(2)}`)(cryptoData),
+          cryptosData
+        );
+        setPieChartProps(getPieChartProps(cryptosData));
         cryptosData.sort((a, b) => (b.myValue || 0) - (a.myValue || 0));
-        setTableProps({
-          columns: [...tableProps.columns],
-          rows: cryptosData.map((cryptoData) => ({
-            ...cryptoData,
-            actions: [
-              <Button
-                key="delete"
-                icon={<DeleteIcon />}
-                color="red"
-                action={() => handleDeleteCrypto(cryptoData.ref || '')}
-                classes="mr-4"
-              />,
-              <Button key="edit" icon={<EditIcon />} action={() => openModal(cryptoData)} />,
-            ],
-          })),
-          hasTotal: tableProps.hasTotal,
-          totalKey: tableProps.totalKey,
-        });
+        setTableProps(updateTableRows(cryptosData));
       }
     }, allCrypto);
   };
@@ -115,6 +128,18 @@ function App() {
     getCryptoData();
   };
 
+  const renderBarChart = (): JSX.Element => {
+    const dailyAmountSum = dailyAmounts.reduce((acc, curr) => (acc = acc + (curr.pnl || 0)), 0);
+    return (
+      <BarChart
+        data={dailyAmounts.map((dailyAmount) => dailyAmount.pnl || 0)}
+        labels={dailyAmounts.map((dailyAmount) => dailyAmount.date)}
+        title={`PNL (${dailyAmountSum > 0 ? '+' : ''} ${dailyAmountSum})`}
+        titleColor={`${dailyAmountSum > 0 ? 'green' : 'red'}`}
+      />
+    );
+  };
+
   return (
     <>
       <Header />
@@ -122,14 +147,11 @@ function App() {
         <AddCrypto onCryptoAdded={onCryptoAdded} />
         <div className="flex flex-row mb-8">
           {tableProps.rows?.length > 0 && <Table {...tableProps} />}
-          {chartProps.labels.length > 0 && <PieChart labels={chartProps.labels} colors={chartProps.colors} data={chartProps.data} />}
+          {pieChartProps.labels.length > 0 && (
+            <PieChart labels={pieChartProps.labels} colors={pieChartProps.colors} data={pieChartProps.data} />
+          )}
         </div>
-        {dailyAmounts && (
-          <BarChart
-            data={dailyAmounts.map((dailyAmount) => dailyAmount.pnl || 0)}
-            labels={dailyAmounts.map((dailyAmount) => dailyAmount.date)}
-          />
-        )}
+        {dailyAmounts && renderBarChart()}
       </main>
       <Modal
         title="Update crypto"

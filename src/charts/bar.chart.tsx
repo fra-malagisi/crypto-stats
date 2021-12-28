@@ -3,7 +3,7 @@ import Chart from 'chart.js/auto';
 import { useEffect, useRef } from 'react';
 import { ChartProps } from 'types';
 
-export const BarChart = ({ data, labels }: ChartProps) => {
+export const BarChart = ({ data, labels, title, titleColor }: ChartProps) => {
   const formatData = (data: number[]): ChartData => ({
     labels,
     datasets: [{ data, backgroundColor: data.map((el) => (el > 0 ? 'rgba(75, 192, 192)' : 'rgba(255, 99, 132)')) }],
@@ -23,7 +23,7 @@ export const BarChart = ({ data, labels }: ChartProps) => {
           maintainAspectRatio: false,
           responsive: true,
           scales: { y: { beginAtZero: true } },
-          plugins: { legend: { display: false }, title: { display: true, text: 'PNL' } },
+          plugins: { legend: { display: false }, title: { display: true, text: title, color: titleColor } },
         },
       });
     }
