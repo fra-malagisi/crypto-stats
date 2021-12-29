@@ -34,14 +34,14 @@ function App() {
     if (equals(dailyAmounts.length, 0)) {
       const dailyAmounts = await faunaDbApiDailyAmount.getAllDailyAmounts();
       setdailyAmounts(drop(1, dailyAmounts));
-      if (all(complement(equals(yesterday)), map(prop('date'), dailyAmounts))) {
+      if (all(complement(equals(yesterday)), map(prop('dateLabel'), dailyAmounts))) {
         let yesterdayTotalAmount = 0;
         for (const crypto of allCrypto) {
           const price = await coinGeckoApi.getCryptoHistory(crypto.id, yesterday.split('/').join('-'));
           yesterdayTotalAmount = add(yesterdayTotalAmount)(multiply(price, crypto.qty));
         }
         const newDailyAmount: DailyAmount = {
-          date: yesterday,
+          dateLabel: yesterday,
           amount: yesterdayTotalAmount,
           pnl: subtract(yesterdayTotalAmount, propOr(0, 'amount')(ArrayUtil.getLastElement<DailyAmount>(dailyAmounts))),
         };
@@ -133,7 +133,7 @@ function App() {
     return (
       <BarChart
         data={dailyAmounts.map((dailyAmount) => dailyAmount.pnl || 0)}
-        labels={dailyAmounts.map((dailyAmount) => dailyAmount.date)}
+        labels={dailyAmounts.map((dailyAmount) => dailyAmount.dateLabel)}
         title={`PNL (${dailyAmountSum > 0 ? '+' : ''} ${dailyAmountSum})`}
         titleColor={`${dailyAmountSum > 0 ? 'green' : 'red'}`}
       />
@@ -151,7 +151,7 @@ function App() {
             <PieChart labels={pieChartProps.labels} colors={pieChartProps.colors} data={pieChartProps.data} />
           )}
         </div>
-        {dailyAmounts && renderBarChart()}
+        {dailyAmounts.length > 0 && renderBarChart()}
       </main>
       <Modal
         title="Update crypto"
