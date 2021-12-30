@@ -127,7 +127,7 @@ function App() {
 
   const onCryptoAdded = () => getCryptoData();
 
-  const renderBarChart = (): JSX.Element => {
+  const renderPnlDailyBarChart = (): JSX.Element => {
     const dailyAmountSum = parseFloat(dailyAmounts.reduce((acc, curr) => (acc = acc + (curr.pnl || 0)), 0).toFixed(3));
     return (
       <BarChart
@@ -150,7 +150,7 @@ function App() {
             <PieChart labels={pieChartProps.labels} colors={pieChartProps.colors} data={pieChartProps.data} />
           )}
         </div>
-        {dailyAmounts.length > 0 && renderBarChart()}
+        {dailyAmounts.length > 0 && renderPnlDailyBarChart()}
       </main>
       <Modal
         title="Update crypto"
