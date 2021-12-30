@@ -15,24 +15,7 @@ import Modal from './components/shared/modal';
 import UpdateCrypto from './pages/update-crypto';
 import { BarChart, PieChart } from 'charts';
 import { initialTableStructure } from './constants';
-import {
-  equals,
-  prop,
-  map,
-  propOr,
-  append,
-  drop,
-  forEach,
-  complement,
-  all,
-  add,
-  multiply,
-  subtract,
-  assoc,
-  reduce,
-  sort,
-  filter,
-} from 'ramda';
+import { equals, prop, map, propOr, append, forEach, complement, all, add, multiply, subtract, assoc, reduce, sort, filter } from 'ramda';
 import coinGeckoApi from 'services/coin-gecko';
 
 function App() {
@@ -50,7 +33,7 @@ function App() {
     const yesterday = new Date(new Date().setDate(new Date().getDate() - 1)).toLocaleDateString();
     if (equals(dailyAmounts.length, 0)) {
       const dailyAmounts = await faunaDbApiDailyAmount.getAllDailyAmounts();
-      setdailyAmounts(drop(1, dailyAmounts));
+      setdailyAmounts(dailyAmounts);
       if (all(complement(equals(yesterday)), map(prop('dateLabel'), dailyAmounts))) {
         let yesterdayTotalAmount = 0;
         for (const crypto of allCrypto) {
@@ -149,7 +132,7 @@ function App() {
     return (
       <BarChart
         data={map(propOr(0, 'pnl'), dailyAmounts) as number[]}
-        labels={map(propOr('', 'dataLabel'), dailyAmounts) as string[]}
+        labels={map(propOr('', 'dateLabel'), dailyAmounts) as string[]}
         title={`Daily PNL (${dailyAmountSum > 0 ? '+' : ''} ${dailyAmountSum})`}
         titleColor={`${dailyAmountSum > 0 ? 'green' : 'red'}`}
       />
