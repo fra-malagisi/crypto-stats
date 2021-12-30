@@ -28,7 +28,7 @@ const getAllDailyAmounts = async (): Promise<DailyAmount[]> => {
 
 const saveDailyAmounts = async (dailyAmount: DailyAmount) => {
   const dateArr = dailyAmount.dateLabel.split('/');
-  const date = `${dateArr[2]}-${dateArr[1]}${dateArr[0]}`;
+  const date = `${dateArr[2]}-${dateArr[1]}-${dateArr[0]}`;
   return await client.query(
     q.Create(q.Collection(DAILY_AMOUNT_COLLECTION), {
       data: {

@@ -15,7 +15,24 @@ import Modal from './components/shared/modal';
 import UpdateCrypto from './pages/update-crypto';
 import { BarChart, PieChart } from 'charts';
 import { initialTableStructure } from './constants';
-import { equals, prop, map, propOr, append, drop, forEach, complement, all, add, multiply, subtract, assoc, reduce } from 'ramda';
+import {
+  equals,
+  prop,
+  map,
+  propOr,
+  append,
+  drop,
+  forEach,
+  complement,
+  all,
+  add,
+  multiply,
+  subtract,
+  assoc,
+  reduce,
+  sort,
+  filter,
+} from 'ramda';
 import coinGeckoApi from 'services/coin-gecko';
 
 function App() {
@@ -77,7 +94,7 @@ function App() {
       (acc, curr) => ({
         labels: append(curr.name, acc.labels),
         colors: append(curr.color || '', acc.colors),
-        data: append(curr.myValue || 0, acc.data),
+        data: append(propOr(0, 'myValue', curr), acc.data),
       }),
       { labels: [] as string[], colors: [] as string[], data: [] as number[] },
       cryptosData
@@ -92,13 +109,14 @@ function App() {
       cryptoData = populateCryptoValues(cryptoData);
       cryptosData = append(cryptoData, cryptosData);
       if (ArrayUtil.isLastElement(allCrypto.length, cryptosData.length)) {
-        const totalAmount = reduce((acc, curr) => acc + (curr.myValue || 0), 0, cryptosData);
+        const totalAmount = reduce((acc, curr) => acc + (propOr(0, 'myValue', curr) as number), 0, cryptosData);
         cryptosData = map(
-          (cryptoData) => assoc('percentage', `${(((cryptoData.myValue || 0) / totalAmount) * 100).toFixed(2)}`)(cryptoData),
+          (cryptoData) =>
+            assoc('percentage', `${(((propOr(0, 'myValue', cryptoData) as number) / totalAmount) * 100).toFixed(2)}`)(cryptoData),
           cryptosData
         );
         setPieChartProps(getPieChartProps(cryptosData));
-        cryptosData.sort((a, b) => (b.myValue || 0) - (a.myValue || 0));
+        cryptosData = sort((a, b) => (propOr(0, 'myValue', b) as number) - (propOr(0, 'myValue', a) as number), cryptosData);
         setTableProps(updateTableRows(cryptosData));
       }
     }, allCrypto);
@@ -113,28 +131,26 @@ function App() {
 
   const handleDeleteCrypto = async (cryptoRef: string) => {
     await faunaDbApiCrypto.deleteCrypto(cryptoRef);
-    setTableProps({
-      columns: [...tableProps.columns],
-      rows: tableProps.rows.filter((row) => {
-        return row.ref !== cryptoRef;
-      }),
-      hasTotal: tableProps.hasTotal,
-      totalKey: tableProps.totalKey,
-    });
+    setTableProps(
+      assoc(
+        'rows',
+        filter((row) => {
+          return row.ref !== cryptoRef;
+        }, tableProps.rows)
+      )(tableProps)
+    );
     getCryptoData();
   };
 
-  const onCryptoAdded = () => {
-    getCryptoData();
-  };
+  const onCryptoAdded = () => getCryptoData();
 
   const renderBarChart = (): JSX.Element => {
-    const dailyAmountSum = dailyAmounts.reduce((acc, curr) => (acc = acc + (curr.pnl || 0)), 0);
+    const dailyAmountSum = parseFloat(dailyAmounts.reduce((acc, curr) => (acc = acc + (curr.pnl || 0)), 0).toFixed(3));
     return (
       <BarChart
-        data={dailyAmounts.map((dailyAmount) => dailyAmount.pnl || 0)}
-        labels={dailyAmounts.map((dailyAmount) => dailyAmount.dateLabel)}
-        title={`PNL (${dailyAmountSum > 0 ? '+' : ''} ${dailyAmountSum})`}
+        data={map(propOr(0, 'pnl'), dailyAmounts) as number[]}
+        labels={map(propOr('', 'dataLabel'), dailyAmounts) as string[]}
+        title={`Daily PNL (${dailyAmountSum > 0 ? '+' : ''} ${dailyAmountSum})`}
         titleColor={`${dailyAmountSum > 0 ? 'green' : 'red'}`}
       />
     );

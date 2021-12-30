@@ -1,7 +1,6 @@
-import coinPaprikaApi from 'services/coin-paprika';
 import coinGeckoApi from 'services/coin-gecko';
 import { IAutocompleteData } from 'types';
-import { ICoin, ICryptoDetails } from 'types';
+import { ICoin } from 'types';
 import { ICrypto } from 'types';
 
 export const cryptoAutocompleteList = async (): Promise<IAutocompleteData[]> => {
