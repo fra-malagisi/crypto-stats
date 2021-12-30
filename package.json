@@ -12,6 +12,7 @@
     "@types/react": "^17.0.30",
     "axios": "^0.23.0",
     "chart.js": "^3.6.0",
+    "commitizen": "^4.2.4",
     "faunadb": "^4.4.1",
     "formik": "^2.2.9",
     "inquirer-recursive": "^0.0.7",
@@ -31,7 +32,8 @@
     "build": "craco build",
     "test": "craco test",
     "eject": "react-scripts eject",
-    "generate": "plop"
+    "generate": "plop",
+    "commit": "cz"
   },
   "eslintConfig": {
     "extends": [
