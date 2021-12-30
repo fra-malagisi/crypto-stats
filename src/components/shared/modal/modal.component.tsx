@@ -1,5 +1,4 @@
 import { DeleteIcon } from 'icons';
-import React from 'react';
 import { ModalProps } from 'types';
 
 const Modal = ({ title, show, content, onClose, footerContent }: ModalProps): JSX.Element => {
