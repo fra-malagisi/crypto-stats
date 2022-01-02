@@ -15,7 +15,24 @@ import Modal from './components/shared/modal';
 import UpdateCrypto from './pages/update-crypto';
 import { BarChart, PieChart } from 'charts';
 import { initialTableStructure } from './constants';
-import { equals, prop, map, propOr, append, forEach, complement, all, add, multiply, subtract, assoc, reduce, sort, filter } from 'ramda';
+import {
+  equals,
+  prop,
+  map,
+  propOr,
+  append,
+  forEach,
+  complement,
+  all,
+  add,
+  multiply,
+  subtract,
+  assoc,
+  reduce,
+  sort,
+  filter,
+  drop,
+} from 'ramda';
 import coinGeckoApi from 'services/coin-gecko';
 
 function App() {
@@ -30,11 +47,17 @@ function App() {
   }, []);
 
   const checkDailyAmounts = async (allCrypto: ICrypto[]) => {
-    const yesterday = new Date(new Date().setDate(new Date().getDate() - 1)).toLocaleDateString();
+    let yesterday;
+    const today = new Date();
+    if (new Date().getDate() !== 1) {
+      yesterday = new Date(today.setDate(today.getDate() - 1)).toLocaleDateString();
+    } else {
+      yesterday = new Date(today.getFullYear(), today.getMonth(), 0).toLocaleDateString();
+    }
     if (equals(dailyAmounts.length, 0)) {
-      const dailyAmounts = await faunaDbApiDailyAmount.getAllDailyAmounts();
-      setdailyAmounts(dailyAmounts);
-      if (all(complement(equals(yesterday)), map(prop('dateLabel'), dailyAmounts))) {
+      const dailyAmountsFromService = await faunaDbApiDailyAmount.getAllDailyAmounts();
+      setdailyAmounts(drop(1, dailyAmountsFromService));
+      if (all(complement(equals(yesterday)), map(prop('dateLabel'), dailyAmountsFromService))) {
         let yesterdayTotalAmount = 0;
         for (const crypto of allCrypto) {
           const price = await coinGeckoApi.getCryptoHistory(crypto.id, yesterday.split('/').join('-'));
@@ -43,10 +66,10 @@ function App() {
         const newDailyAmount: DailyAmount = {
           dateLabel: yesterday,
           amount: yesterdayTotalAmount,
-          pnl: subtract(yesterdayTotalAmount, propOr(0, 'amount')(ArrayUtil.getLastElement<DailyAmount>(dailyAmounts))),
+          pnl: subtract(yesterdayTotalAmount, propOr(0, 'amount')(ArrayUtil.getLastElement<DailyAmount>(dailyAmountsFromService))),
         };
         saveDailyAmount(newDailyAmount);
-        setdailyAmounts(append(newDailyAmount, dailyAmounts));
+        setdailyAmounts(append(newDailyAmount, dailyAmountsFromService));
       }
     }
   };

@@ -5,15 +5,28 @@ const DAILY_AMOUNT_COLLECTION = 'daily_amount';
 
 const getAllDailyAmounts = async (): Promise<DailyAmount[]> => {
   const date = new Date();
-  const monthYear = `${date.getDate() !== 1 ? date.getMonth() + 1 : date.getMonth()}/${
-    date.getDate() === 1 && date.getMonth() === 1 ? date.getFullYear() - 1 : date.getFullYear()
+  const monthYear = `${date.getDate() !== 1 ? date.getMonth() + 1 : date.getMonth() === 0 ? '12' : date.getMonth()}/${
+    date.getDate() === 1 && date.getMonth() === 0 ? date.getFullYear() - 1 : date.getFullYear()
   }`;
   return await client
     .query(
       q.Map(
         q.Filter(
           q.Paginate(q.Match(q.Index('all_daily_amount'))),
-          q.Lambda('daily_amount', q.ContainsStr(q.Select('dateLabel', q.Select('data', q.Get(q.Var('daily_amount')))), monthYear))
+          q.Lambda(
+            'daily_amount',
+            q.Or(
+              q.ContainsStr(q.Select('dateLabel', q.Select('data', q.Get(q.Var('daily_amount')))), monthYear),
+              q.ContainsStr(
+                q.Select('dateLabel', q.Select('data', q.Get(q.Var('daily_amount')))),
+                new Date(
+                  date.getMonth() === 0 ? date.getFullYear() - 1 : date.getFullYear(),
+                  date.getMonth() - 1 < 0 ? 12 : date.getMonth() - 1,
+                  0
+                ).toLocaleDateString()
+              )
+            )
+          )
         ),
         q.Lambda('X', q.Get(q.Var('X')))
       )
@@ -28,7 +41,9 @@ const getAllDailyAmounts = async (): Promise<DailyAmount[]> => {
 
 const saveDailyAmounts = async (dailyAmount: DailyAmount) => {
   const dateArr = dailyAmount.dateLabel.split('/');
-  const date = `${dateArr[2]}-${dateArr[1]}-${dateArr[0]}`;
+  const date = `${dateArr[2]}-${dateArr[1].length === 1 ? '0' + dateArr[1] : dateArr[1]}-${
+    dateArr[0].length === 1 ? '0' + dateArr[0] : dateArr[0]
+  }`;
   return await client.query(
     q.Create(q.Collection(DAILY_AMOUNT_COLLECTION), {
       data: {
