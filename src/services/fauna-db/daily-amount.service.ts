@@ -1,13 +1,12 @@
 import { client, q } from 'config/db';
 import { DailyAmount } from 'types';
+import { getMonthAndYear } from 'utils';
 
 const DAILY_AMOUNT_COLLECTION = 'daily_amount';
 
 const getAllDailyAmounts = async (): Promise<DailyAmount[]> => {
   const date = new Date();
-  const monthYear = `${date.getDate() !== 1 ? date.getMonth() + 1 : date.getMonth() === 0 ? '12' : date.getMonth()}/${
-    date.getDate() === 1 && date.getMonth() === 0 ? date.getFullYear() - 1 : date.getFullYear()
-  }`;
+  const monthYear = getMonthAndYear();
   return await client
     .query(
       q.Map(
