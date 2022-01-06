@@ -40,8 +40,8 @@ export const BarChart = ({ data, labels, title, titleColor }: ChartProps) => {
   }, [data]);
 
   return (
-    <div className="w-1/2 border rounded shadow">
-      <canvas ref={canvasCallback} id="myChart" width="200" height="400"></canvas>
+    <div className="w-full md:w-1/2 border rounded shadow">
+      <canvas ref={canvasCallback} id="myChart" width="300" height="400"></canvas>
     </div>
   );
 };

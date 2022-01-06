@@ -63,13 +63,11 @@ function App() {
     setShowModal(true);
   };
 
-  const onCryptoAdded = () => getCryptoData();
-
   return (
     <>
       <Header />
       <main className="px-4 pb-8 md:px-0 flex flex-col">
-        <AddCrypto onCryptoAdded={onCryptoAdded} />
+        <AddCrypto onCryptoAdded={getCryptoData} />
         <div className="flex flex-row mb-8">
           {allCrypto.length > 0 && <CryptoTable allCrypto={allCrypto} handleDelete={getCryptoData} handleEdit={openModal} />}
           {allCrypto.length > 0 && <CryptoPieChart allCrypto={allCrypto} />}

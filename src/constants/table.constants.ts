@@ -21,12 +21,16 @@ export const initialTableStructure: ITableProps = {
       key: 'myValueFormatted',
     },
     {
-      label: 'Actions',
-      key: 'actions',
-    },
-    {
       label: '%',
       key: 'percentage',
+    },
+    {
+      label: '24h',
+      key: 'price24Change',
+    },
+    {
+      label: 'Actions',
+      key: 'actions',
     },
   ],
   hasTotal: true,

@@ -9,4 +9,5 @@ export interface ICrypto {
   valueFormatted?: string;
   color?: string;
   percentage?: string;
+  price24Change?: number;
 }

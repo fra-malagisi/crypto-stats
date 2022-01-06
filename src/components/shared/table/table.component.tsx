@@ -18,7 +18,9 @@ const Table = ({ rows, columns, hasTotal, totalKey }: ITableProps): JSX.Element 
           <tr key={row.id}>
             {columns.map((column) => (
               <td
-                className={`p-4 border-l border-b ${Array.isArray(row[column.key]) ? 'fex justify-around' : ''}`}
+                className={`p-4 border-l border-b ${Array.isArray(row[column.key]) ? 'flex justify-around' : ''} ${
+                  row.customStyle && row.customStyle.column === column.key ? row.customStyle.style : ''
+                }`}
                 key={row.id + column.key}
               >
                 {Array.isArray(row[column.key]) ? [...row[column.key]] : row[column.key]}
@@ -30,7 +32,7 @@ const Table = ({ rows, columns, hasTotal, totalKey }: ITableProps): JSX.Element 
       {hasTotal && (
         <tfoot>
           <tr>
-            <th id="total" colSpan={columns.length - 3}>
+            <th id="total" colSpan={columns.length - 4}>
               Total :
             </th>
             <td>

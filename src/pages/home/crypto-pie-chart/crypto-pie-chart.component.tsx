@@ -8,6 +8,7 @@ export type CryptoPieChartProps = {
 };
 
 const CryptoPieChart = ({ allCrypto }: CryptoPieChartProps): JSX.Element => {
+  console.log('pie');
   const [pieChartProps, setPieChartProps] = useState<ChartProps>({ labels: [], colors: [], data: [] });
 
   useEffect(() => {
@@ -34,4 +35,4 @@ const CryptoPieChart = ({ allCrypto }: CryptoPieChartProps): JSX.Element => {
   );
 };
 
-export default CryptoPieChart;
+export default React.memo(CryptoPieChart);

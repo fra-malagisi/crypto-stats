@@ -24,6 +24,10 @@ const CryptoTable = ({ allCrypto, handleEdit, handleDelete }: CryptoTableProps):
       map(
         (cryptoData: ICrypto) => ({
           ...cryptoData,
+          customStyle: {
+            column: 'price24Change',
+            style: `font-bold ${(cryptoData.price24Change || -1) > 0 ? 'text-green-500' : 'text-red-500'}`,
+          },
           actions: [
             <Button
               key="delete"
