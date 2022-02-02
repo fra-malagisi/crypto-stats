@@ -23,6 +23,8 @@ function App() {
     getCryptoData();
   }, []);
 
+  console.log(process.env, 'NODE');
+
   const getCryptoData = async () => {
     let allCrypto: ICrypto[];
     try {

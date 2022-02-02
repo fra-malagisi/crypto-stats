@@ -6,6 +6,8 @@ const DAILY_AMOUNT_COLLECTION = 'daily_amount';
 
 const getAllDailyAmounts = async (): Promise<DailyAmount[]> => {
   const date = new Date();
+  console.log(date.getMonth() === 0 ? date.getFullYear() - 1 : date.getFullYear());
+  console.log(date.getMonth() - 1 < 0 ? 12 : date.getMonth() - 1);
   const monthYear = getMonthAndYear();
   return await client
     .query(
@@ -20,7 +22,7 @@ const getAllDailyAmounts = async (): Promise<DailyAmount[]> => {
                 q.Select('dateLabel', q.Select('data', q.Get(q.Var('daily_amount')))),
                 new Date(
                   date.getMonth() === 0 ? date.getFullYear() - 1 : date.getFullYear(),
-                  date.getMonth() - 1 < 0 ? 12 : date.getMonth() - 1,
+                  date.getMonth() - 1 < 0 ? 12 : date.getMonth() - 1 === 0 ? 1 : date.getMonth() - 1,
                   0
                 ).toLocaleDateString()
               )
